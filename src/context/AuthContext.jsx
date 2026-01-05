@@ -56,6 +56,23 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const signup = async (name, email, password) => {
+    try {
+      setError(null);
+      const response = await authAPI.signup(name, email, password);
+      
+      localStorage.setItem('workasana_token', response.token);
+      setUser(response.user);
+      toast.success(`Welcome to Workasana, ${response.user.name}!`);
+      
+      return { success: true };
+    } catch (error) {
+      setError(error.message);
+      toast.error('Signup failed. Please try again.');
+      return { success: false, error: error.message };
+    }
+  };
+
 
 
   const logout = () => {

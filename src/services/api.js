@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://workasana-backend-wine.vercel.app'; 
+const API_BASE_URL = 'https://workasana-backend-wine.vercel.app/api';
 
 // get token from localStorage
 const getToken = () => localStorage.getItem('workasana_token');
