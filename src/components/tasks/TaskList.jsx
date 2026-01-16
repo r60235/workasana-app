@@ -51,7 +51,7 @@ const TaskList = () => {
     });
     setSearchParams(params);
     loadTasks();
-  }, [filters, setSearchParams]);
+  }, [filters, sortBy, sortOrder, setSearchParams]);
 
   const loadData = async () => {
     try {
@@ -299,16 +299,25 @@ const TaskList = () => {
 
             <div className="col-md-2">
               <label className="form-label small">Sort By</label>
-              <select 
-                className="form-select form-select-sm"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <option value="createdAt">Created Date</option>
-                <option value="updatedAt">Updated Date</option>
-                <option value="timeToComplete">Priority</option>
-                <option value="name">Name</option>
-              </select>
+              <div className="input-group input-group-sm">
+                <select 
+                  className="form-select"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="createdAt">Created Date</option>
+                  <option value="updatedAt">Updated Date</option>
+                  <option value="timeToComplete">Priority</option>
+                  <option value="name">Name</option>
+                </select>
+                <button
+                  className="btn btn-outline-secondary"
+                  onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                  title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+                >
+                  <i className={`bi bi-sort-${sortOrder === 'asc' ? 'up' : 'down'}`}></i>
+                </button>
+              </div>
             </div>
 
             <div className="col-md-2">

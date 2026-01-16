@@ -108,12 +108,10 @@ const TeamView = () => {
     setError('');
 
     try {
-      // In a real app, this would call an API to add member to team
-      // For now, we'll just show a success message and close modal
-      console.log('Adding member to team:', selectedTeam.id, memberFormData);
+      await teamsAPI.addMember(selectedTeam.id, memberFormData.userId, memberFormData.role);
       setMemberFormData({ userId: '', role: 'Member' });
       setShowMemberModal(false);
-      // loadData(); // Uncomment when API is implemented
+      loadData(); // Reload data to show new member
     } catch (error) {
       setError(error.message);
     } finally {
@@ -325,28 +323,31 @@ const TeamView = () => {
               </div>
               
               <div className="row">
-                {/* Sample members - in real app, this would come from API */}
-                {[
-                  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Team Lead' },
-                  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Developer' },
-                  { id: 3, name: 'Mike Johnson', email: 'mike@example.com', role: 'Designer' },
-                  { id: 4, name: 'Sarah Wilson', email: 'sarah@example.com', role: 'QA Engineer' },
-                  { id: 5, name: 'David Brown', email: 'david@example.com', role: 'Developer' }
-                ].map((member) => (
-                  <div key={member.id} className="col-md-6 col-lg-4 mb-3">
-                    <div className="d-flex align-items-center p-3 border rounded">
-                      <div className="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" 
-                           style={{ width: '40px', height: '40px' }}>
-                        <i className="bi bi-person text-white"></i>
-                      </div>
-                      <div className="flex-grow-1">
-                        <h6 className="mb-1">{member.name}</h6>
-                        <small className="text-muted d-block">{member.email}</small>
-                        <small className="badge bg-light text-dark">{member.role}</small>
+                {/* Display real team members from API */}
+                {selectedTeam.members && selectedTeam.members.length > 0 ? (
+                  selectedTeam.members.map((member) => (
+                    <div key={member.id} className="col-md-6 col-lg-4 mb-3">
+                      <div className="d-flex align-items-center p-3 border rounded">
+                        <div className="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" 
+                             style={{ width: '40px', height: '40px' }}>
+                          <i className="bi bi-person text-white"></i>
+                        </div>
+                        <div className="flex-grow-1">
+                          <h6 className="mb-1">{member.name}</h6>
+                          <small className="text-muted d-block">{member.email}</small>
+                          <small className="badge bg-light text-dark">{member.role}</small>
+                        </div>
                       </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="col-12">
+                    <div className="text-center py-4 text-muted">
+                      <i className="bi bi-people" style={{ fontSize: '2rem' }}></i>
+                      <p className="mt-2 mb-0">No members yet. Add your first member!</p>
+                    </div>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </div>
@@ -513,27 +514,29 @@ const TeamView = () => {
                       </div>
                     )}
                     
-                    {/* Sample team members avatars */}
+                    {/* Team members avatars */}
                     <div className="d-flex align-items-center mb-3">
                       <div className="d-flex">
-                        <div className="bg-primary rounded-circle d-flex align-items-center justify-content-center me-1" 
-                             style={{ width: '24px', height: '24px', fontSize: '10px' }}>
-                          <i className="bi bi-person text-white"></i>
-                        </div>
-                        <div className="bg-success rounded-circle d-flex align-items-center justify-content-center me-1" 
-                             style={{ width: '24px', height: '24px', fontSize: '10px' }}>
-                          <i className="bi bi-person text-white"></i>
-                        </div>
-                        <div className="bg-info rounded-circle d-flex align-items-center justify-content-center me-1" 
-                             style={{ width: '24px', height: '24px', fontSize: '10px' }}>
-                          <i className="bi bi-person text-white"></i>
-                        </div>
-                        <div className="bg-secondary rounded-circle d-flex align-items-center justify-content-center" 
-                             style={{ width: '24px', height: '24px', fontSize: '8px' }}>
-                          <span className="text-white">+2</span>
-                        </div>
+                        {team.members && team.members.slice(0, 3).map((member, idx) => (
+                          <div 
+                            key={member.id}
+                            className={`bg-${getTeamColor(idx)} rounded-circle d-flex align-items-center justify-content-center me-1`}
+                            style={{ width: '24px', height: '24px', fontSize: '10px' }}
+                            title={member.name}
+                          >
+                            <i className="bi bi-person text-white"></i>
+                          </div>
+                        ))}
+                        {team.members && team.members.length > 3 && (
+                          <div className="bg-secondary rounded-circle d-flex align-items-center justify-content-center" 
+                               style={{ width: '24px', height: '24px', fontSize: '8px' }}>
+                            <span className="text-white">+{team.members.length - 3}</span>
+                          </div>
+                        )}
                       </div>
-                      <small className="text-muted ms-2">5 members</small>
+                      <small className="text-muted ms-2">
+                        {team.members ? team.members.length : 0} member{team.members && team.members.length !== 1 ? 's' : ''}
+                      </small>
                     </div>
                     
                     <div className="d-flex justify-content-between align-items-center text-muted small">

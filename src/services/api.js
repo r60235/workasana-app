@@ -60,6 +60,15 @@ export const teamsAPI = {
       method: 'POST',
       body: JSON.stringify({ name, description }),
     }),
+  addMember: (teamId, userId, role) =>
+    apiRequest(`/teams/${teamId}/members`, {
+      method: 'POST',
+      body: JSON.stringify({ userId, role }),
+    }),
+  removeMember: (teamId, memberId) =>
+    apiRequest(`/teams/${teamId}/members/${memberId}`, {
+      method: 'DELETE',
+    }),
 };
 
 // projects api
